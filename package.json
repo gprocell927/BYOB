@@ -1,0 +1,22 @@
+{
+  "name": "build-your-own-backend",
+  "version": "1.0.0",
+  "description": "An API for our capstone projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "api",
+    "veterinary",
+    "anesthesia",
+    "records",
+    "patient",
+    "management",
+    "express",
+    "knex",
+    "javascript"
+  ],
+  "author": "Gabrielle Procell",
+  "license": "ISC"
+}
