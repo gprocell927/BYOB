@@ -22,10 +22,12 @@ exports.up = function(knex, Promise) {
       table.time('start_time')
       table.time('end_time')
       table.text('notes')
+      table.timestamps
     }),
 
     knex.schema.createTable('readings', function(table) {
       table.timestamp
+      //make a time column
       table.decimal('temperature')
       table.integer('pulse')
       table.integer('respirations')
@@ -46,8 +48,8 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
   return Promise.all([
-    knex.schema.dropTable('patients'),
-    knex.schema.dropTable('procedures'),
-    knex.schema.dropTable('readings')
+    knex.schema.dropTableIfExists('readings'),
+    knex.schema.dropTableIfExists('procedures'),
+    knex.schema.dropTableIfExists('patients')
   ])
 };
