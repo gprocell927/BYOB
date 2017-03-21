@@ -18,5 +18,9 @@
     "javascript"
   ],
   "author": "Gabrielle Procell",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "knex": "^0.12.8",
+    "pg": "^6.1.5"
+  }
 }
