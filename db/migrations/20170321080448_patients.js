@@ -35,7 +35,7 @@ exports.up = function(knex, Promise) {
       table.decimal('vaporizer')
       table.string('gas_agent')
       table.integer('systolic_bp')
-      table.integer('diastoli_bp')
+      table.integer('diastolic_bp')
       table.integer('mean_bp')
       table.integer('etco2')
       table.integer('spo2')
