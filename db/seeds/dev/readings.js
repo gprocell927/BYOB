@@ -42,7 +42,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:80,
         etco2:87,
         spo2:6,
-        procedure_id:34
+        procedure_id:6
       }),
       knex('readings').insert({
         temperature:2.6,
@@ -56,7 +56,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:29,
         etco2:49,
         spo2:1,
-        procedure_id:80
+        procedure_id:7
       }),
       knex('readings').insert({
         temperature:0.3,
@@ -64,13 +64,13 @@ exports.seed = function(knex, Promise) {
         respirations:14,
         oxygen:4.0,
         vaporizer:2.9,
-        gas_agent:"Sevoflurane"​,
+        gas_agent:"Sevoflurane",
         systolic_bp:78,
         diastolic_bp:96,
         mean_bp:76,
         etco2:68,
         spo2:12,
-        procedure_id:42
+        procedure_id:8
       }),
       knex('readings').insert({
         temperature:3.5,
@@ -98,7 +98,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:98,
         etco2:6,
         spo2:5,
-        procedure_id:31
+        procedure_id:9
       }),
       knex('readings').insert({
         temperature:0.5,
@@ -154,7 +154,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:92,
         etco2:65,
         spo2:21,
-        procedure_id:51
+        procedure_id:10
       }),
       knex('readings').insert({
         temperature:3.8,
@@ -168,7 +168,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:96,
         etco2:48,
         spo2:53,
-        procedure_id:97
+        procedure_id:11
       }),
       knex('readings').insert({
         temperature:2.2,
@@ -182,7 +182,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:18,
         etco2:38,
         spo2:9,
-        procedure_id:98
+        procedure_id:12
       }),
       knex('readings').insert({
         temperature:0.8,
@@ -196,7 +196,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:31,
         etco2:15,
         spo2:37,
-        procedure_id:69
+        procedure_id:13
       }),
       knex('readings').insert({
         temperature:1.0,
@@ -246,13 +246,13 @@ exports.seed = function(knex, Promise) {
         respirations:34,
         oxygen:3.6,
         vaporizer:1.9,
-        gas_agent:'Sevoflurane'​,
+        gas_agent:'Sevoflurane',
         systolic_bp:31,
         diastolic_bp:30,
         mean_bp:87,
         etco2:21,
         spo2:99,
-        procedure_id:58
+        procedure_id:14
       }),
       knex('readings').insert({
         temperature:4.0,
@@ -266,7 +266,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:81,
         etco2:75,
         spo2:40,
-        procedure_id:88
+        procedure_id:15
       }),
       knex('readings').insert({
         temperature:3.3,
@@ -280,7 +280,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:2,
         etco2:8,
         spo2:58,
-        procedure_id:78
+        procedure_id:16
       }),
       knex('readings').insert({
         temperature:0.7,
@@ -308,7 +308,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:43,
         etco2:4,
         spo2:37,
-        procedure_id:52
+        procedure_id:17
       }),
       knex('readings').insert({
         temperature:1.5,
@@ -322,7 +322,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:76,
         etco2:48,
         spo2:100,
-        procedure_id:35
+        procedure_id:18
       }),
       knex('readings').insert({
         temperature:0.6,
@@ -330,13 +330,13 @@ exports.seed = function(knex, Promise) {
         respirations:80,
         oxygen:4.4,
         vaporizer:2.7,
-        gas_agent:​'Isoflurane',
+        gas_agent:'Isoflurane',
         systolic_bp:48,
         diastolic_bp:84,
         mean_bp:84,
         etco2:45,
         spo2:86,
-        procedure_id:75
+        procedure_id:1
       }),
       knex('readings').insert({
         temperature:3.5,
@@ -350,7 +350,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:42,
         etco2:96,
         spo2:96,
-        procedure_id:76
+        procedure_id:2
       }),
       knex('readings').insert({
         temperature:1.2,
@@ -364,7 +364,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:96,
         etco2:26,
         spo2:20,
-        procedure_id:88
+        procedure_id:3
       }),
       knex('readings').insert({
         temperature:1.9,
@@ -378,7 +378,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:28,
         etco2:95,
         spo2:58,
-        procedure_id:70
+        procedure_id:4
       }),
       knex('readings').insert({
         temperature:1.3,
@@ -392,7 +392,7 @@ exports.seed = function(knex, Promise) {
         mean_bp:76,
         etco2:8,
         spo2:84,
-        procedure_id:85
+        procedure_id:5
       }),
       knex('readings').insert({
         temperature:0.4,
