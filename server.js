@@ -25,7 +25,6 @@ app.set('port', process.env.PORT || 3000)
 app.get('/api/v1/patients', (req, res) => {
   database('patients').select()
   .then(patients => {
-    console.log(patients)
     res.status(200).json(patients)
   })
   .catch((error) => {
@@ -33,10 +32,22 @@ app.get('/api/v1/patients', (req, res) => {
   })
 })
 app.get('/api/v1/procedures', (req, res) => {
-
+  database('procedures').select()
+  .then(procedures => {
+    res.status(200).json(procedures)
+  })
+  .catch(error => {
+    console.error(error)
+  })
 })
 app.get('/api/v1/readings', (req, res) => {
-
+  database('readings').select()
+  .then(readings => {
+    res.status(200).json(readings)
+  })
+  .catch(error => {
+    console.error(error)
+  })
 })
 app.get('/api/v1/patients/:id', (req, res) => {
 
