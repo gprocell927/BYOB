@@ -1,4 +1,3 @@
-
 exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.createTable('patients', function(table) {
@@ -27,7 +26,6 @@ exports.up = function(knex, Promise) {
 
     knex.schema.createTable('readings', function(table) {
       table.timestamp
-      //make a time column
       table.decimal('temperature')
       table.integer('pulse')
       table.integer('respirations')

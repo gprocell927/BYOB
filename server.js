@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set('port', process.env.PORT || 3000)
 
-//ENDPOINTS
+//6 GET ENDPOINTS
 
 app.get('/api/v1/patients', (req, res) => {
   database('patients').select()
@@ -28,7 +28,7 @@ app.get('/api/v1/patients', (req, res) => {
     res.status(200).json(patients)
   })
   .catch((error) => {
-    console.error(error)
+    res.status(404)
   })
 })
 app.get('/api/v1/procedures', (req, res) => {
@@ -37,7 +37,7 @@ app.get('/api/v1/procedures', (req, res) => {
     res.status(200).json(procedures)
   })
   .catch(error => {
-    console.error(error)
+    res.status(404)
   })
 })
 app.get('/api/v1/readings', (req, res) => {
@@ -46,18 +46,148 @@ app.get('/api/v1/readings', (req, res) => {
     res.status(200).json(readings)
   })
   .catch(error => {
-    console.error(error)
+    res.status(404)
   })
 })
+
 app.get('/api/v1/patients/:id', (req, res) => {
-
+  database('patients').where('id', req.params.id).select()
+  .then(patients => {
+    res.status(200).json(patients)
+  })
+  .catch(error => {
+    res.status(404)
+  })
 })
+//ReferenceError: request is not defined
 app.get('/api/v1/procedures/:id', (req, res) => {
-
+  database('procedures').where('id', req.params.id).select()
+  .then(procedures => {
+    res.status(200).json(procedures)
+  })
+  .catch(error => {
+    res.status(404)
+  })
 })
+
+
 app.get('/api/v1/readings/:id', (req, res) => {
+  database('readings').where('procedure_id', req.params.id).select()
+  .then(readings => {
+    res.status(200).json(readings)
+  })
+  .catch(error => {
+    res.status(404)
+  })
+})
+//renders an empty array
 
+//3 POST ENDPOINTS
+
+app.post('/api/v1/patients', (req, res) => {
+  const { name, sex, species, dob } = req.body
+  const patient = { name, sex, species, dob }
+  database('patients').insert(patient)
+  .then(() => {
+    database('patients').select()
+      .then( patients => {
+        res.status(200).json(patients)
+      })
+    .catch(error => {
+      console.error('Something stinks about the db')
+    })
+  })
+}) // could not get a response
+
+app.post('/api/v1/procedures', (req, res) => {
+  const { date, surgeon, anesthetist, patient_id, start_time, end_time, notes } = req.body
+  const patient = { date, surgeon, anesthetist, patient_id, start_time, end_time, notes }
+  database('procedure').insert(procedure)
+  .then(() => {
+    database('procedures').select()
+      .then( patients => {
+        res.status(200).json(procedures)
+      })
+    .catch(error => {
+      res.send('Something stinks about the db')
+    })
+  })
 })
-app.listen(app.get('port'), ()=> {
-  console.log('Magic is running on 3000')
+//could not get a response
+
+app.post('/api/v1/readings', (req, res) => {
+  const {temperature,
+        pulse,
+        respirations,
+        oxygen,
+        vaporizer,
+        gas_agent,
+        systolic_bp,
+        diastolic_bp,
+        mean_bp,
+        etco2,
+        spo2,
+        procedure_id
+ } = req.body
+
+  const reading = {
+          temperature,
+          pulse,
+          respirations,
+          oxygen,
+          vaporizer,
+          gas_agent,
+          systolic_bp,
+          diastolic_bp,
+          mean_bp,
+          etco2,
+          spo2,
+          procedure_id
+ }
+  database('readings').insert(reading)
+  .then(() => {
+    database('readings').select()
+      .then( readings => {
+        res.status(200).json(readings)
+      })
+    .catch(error => {
+      console.error('Something stinks about the db')
+    })
+  })
 })
+
+// 3 PUT OR PATCH ENDPOINTS
+
+app.put('/api/v1/patients/:id', (req, res) => {
+  const { id } = req.params
+  console.log(res);
+  const { name, species } = req.body
+  database('patients').where('id', parseInt(id)).update({
+    name, species
+  })
+  .then(() => {
+    res.status(200)
+  })
+  .catch(error => error.status(422))
+})
+
+app.put('/api/v1/readings/:procedure_id', (req, res) => {
+  const { procedure_id } = req.params
+  database('readings').where('procedure_id', parseInt(procedure_id)).update({
+    temperature, pulse, respirations, oxygen, vaporizer, gas_agent, systolic_bp, diastolic_bp, mean_bp, etco2, spo2
+  })
+  .then(() => {
+    res.status(200)
+  })
+  .catch(error => error.status(422))
+})
+
+
+
+if(!module.parent){
+  app.listen(app.get('port'), ()=> {
+    console.log('Magic is running on 3000')
+  })
+}
+
+module.exports = app
