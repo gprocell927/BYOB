@@ -160,7 +160,6 @@ app.post('/api/v1/readings', (req, res) => {
 
 app.put('/api/v1/patients/:id', (req, res) => {
   const { id } = req.params
-  console.log(res);
   const { name, species } = req.body
   database('patients').where('id', parseInt(id)).update({
     name, species
