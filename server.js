@@ -40,6 +40,7 @@ app.get('/api/v1/procedures', (req, res) => {
     res.status(404)
   })
 })
+
 app.get('/api/v1/readings', (req, res) => {
   database('readings').select()
   .then(readings => {
@@ -59,7 +60,7 @@ app.get('/api/v1/patients/:id', (req, res) => {
     res.status(404)
   })
 })
-//ReferenceError: request is not defined
+
 app.get('/api/v1/procedures/:id', (req, res) => {
   database('procedures').where('id', req.params.id).select()
   .then(procedures => {
@@ -80,7 +81,6 @@ app.get('/api/v1/readings/:id', (req, res) => {
     res.status(404)
   })
 })
-//renders an empty array
 
 //3 POST ENDPOINTS
 
