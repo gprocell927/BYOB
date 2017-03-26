@@ -249,13 +249,10 @@ app.delete('/api/v1/readings/:id', (req, res) => {
 // 1 ENDPOINT THAT CALCULATES A TOTAL NUMBER OF SOMETHING
 app.get('/api/v1/readings/:id/avgtemperature', (req, res) => {
   const { id } = req.params
-  database('readings').where('procedure_id', id).select('temperature')
+  database('readings').where('procedure_id', id).avg('temperature')
   // => [{"temperature":"100.4"},{"temperature":"100.4"},{"temperature":"100.4"}]
   .then((readings) => {
-    const readingLength = readings.length
-    return readings.reduce((acc, temp) => {
-      console.log('Total temp:',(temp.temperature))
-    },0)
+    res.status(200).json(readings)
   })
   .catch(error => {
     res.status(404)
