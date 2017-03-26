@@ -190,7 +190,7 @@ app.patch('/api/v1/readings/:procedure_id', (req, res) => {
   })
 })
 
-app.patch('/api/v1/procedures/:id', (req, res) => {
+app.put('/api/v1/procedures/:id', (req, res) => {
   const { id } = req.params
   const { date, surgeon, anesthetist, start_time, end_time, notes} = req.body
   database('procedures').where('id', id).update({ date, surgeon, anesthetist, start_time, end_time, notes
@@ -203,6 +203,48 @@ app.patch('/api/v1/procedures/:id', (req, res) => {
 })
 
 // 3 DELETE ENDPOINTS
+
+app.delete('/api/v1/patients/:id', (req, res) => {
+  const { id } = req.params
+  database('readings').where('procedure_id', id).del()
+    .then(() => {
+      database('procedures').where('patient_id', id).del()
+      .then(() => {
+        database('patients').where('id', id).del()
+        .then(() => {
+          res.status(200).send(`Patient with ID of ${id} has been deleted`)
+        })
+        .catch(error => {
+          res.status(500)
+        })
+      })
+    })
+  })
+
+app.delete('/api/v1/procedures/:id', (req, res) => {
+  const { id } = req.params
+  database('readings').where('procedure_id', id).del()
+    .then(() => {
+        database('procedures').where('patient_id', id).del()
+      .then(() => {
+        res.status(200).send(`Procedure with ID of ${id} has been deleted.`)
+    })
+    .catch(error => {
+      res.status(500)
+    })
+  })
+})
+
+app.delete('/api/v1/readings/:id', (req, res) => {
+  const { id } = req.params
+  database('readings').where('id', id).del()
+    .then(readings => {
+        res.status(200).json(readings)
+    })
+    .catch(error => {
+      res.status(500)
+    })
+  })
 
 // 1 ENDPOINT THAT CALCULATES A TOTAL NUMBER OF SOMETHING
 
