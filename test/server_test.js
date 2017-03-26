@@ -16,13 +16,13 @@ describe('Server', () => {
   })
 })
 
-describe('muh endpoints', () => {
+describe('GET endpoints', () => {
     beforeEach((done) => {
       knex.migrate.rollback()
       .then(() => {
         knex.migrate.latest()
           .then(() => {
-            return knex.seed.run()
+             knex.seed.run()
             .then(() => {
               done()
             })
@@ -202,27 +202,6 @@ describe('muh endpoints', () => {
       })
     })
 
-    it.skip('POST /api/v1/patients should add a patient', (done) => {
-      chai.request(app)
-      .post('/api/v1/patients')
-      .send({
-        name: 'Jack Burton',
-        sex:'M',
-        species:'Canine',
-        dob: "11/01/2007"
-      })
-      .end((err, res) => {
-        expect(res).to.have.status(200)
-        expect(res).to.be.json
-        expect(res.body).to.be.a('array')
-        expect(res.body[0]).to.have.property('name')
-        expect(res.body.name).to.equal('Jack Burton')
-        expect(res.body).to.have.property('dob')
-        expect(res.body.dob).to.equal('11/01/2007')
-        done()
-      })
-    })
-
     it.skip('PUT /api/v1/patients/:id should update a patient', (done) => {
       chai.request(app)
       .put('/api/v1/patients/1')
@@ -236,3 +215,33 @@ describe('muh endpoints', () => {
       })
     })
   })
+
+describe('POST endpoints', () => {
+  afterEach((done) => {
+    knex.migrate.rollback()
+    .then(() => {
+      done()
+    })
+  })
+
+  it('POST /api/v1/patients should add a patient', (done) => {
+    chai.request(app)
+    .post('/api/v1/patients')
+    .send({
+      name: 'Jack Burton',
+      sex:'M',
+      species:'Canine',
+      dob: "11/01/2007"
+    })
+    .end((err, res) => {
+      expect(res).to.have.status(200)
+      expect(res).to.be.json
+      expect(res.body).to.be.a('array')
+      expect(res.body[0].name).to.equal('Jack Burton')
+      expect(res.body[0].sex).to.equal('M')
+      expect(res.body[0].species).to.equal('Canine')
+      expect(res.body[0].dob).to.equal('11/01/2007')
+      done()
+    })
+  })
+})
