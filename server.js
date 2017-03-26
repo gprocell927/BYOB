@@ -162,8 +162,8 @@ app.post('/api/v1/readings', (req, res) => {
 
 app.patch('/api/v1/patients/:id', (req, res) => {
   const { id } = req.params
-  const { name, species } = req.body
-  database('patients').where('id', id).update({ name, species})
+  const { name, species, sex, dob } = req.body
+  database('patients').where('id', id).update({ name, species, sex, dob})
   .then(() => {
     database('patients').where('id',id).select()
     .then(patients => {
@@ -175,26 +175,31 @@ app.patch('/api/v1/patients/:id', (req, res) => {
   })
 })
 
-app.put('/api/v1/readings/:procedure_id', (req, res) => {
+app.patch('/api/v1/readings/:procedure_id', (req, res) => {
   const { procedure_id } = req.params
-  database('readings').where('procedure_id', parseInt(procedure_id)).update({
+  const { temperature, pulse, respirations, oxygen, vaporizer, gas_agent, systolic_bp, diastolic_bp, mean_bp, etco2, spo2 } = req.body
+  database('readings').where('procedure_id', procedure_id).update({
     temperature, pulse, respirations, oxygen, vaporizer, gas_agent, systolic_bp, diastolic_bp, mean_bp, etco2, spo2
   })
   .then(() => {
-    res.status(200)
+    database('readings').where('procedure_id', procedure_id).select()
+    .then((readings) => {
+      res.status(200).json(readings)
+    })
+    .catch(error => res.status(500))
   })
-  .catch(error => error.status(422))
 })
 
-app.put('/api/v1/procedures/:procedure_id', (req, res) => {
-  const { procedure_id } = req.params
-  database('procedures').where('procedure_id', parseInt(procedure_id)).update({
-    temperature, pulse, respirations, oxygen, vaporizer, gas_agent, systolic_bp, diastolic_bp, mean_bp, etco2, spo2
+app.patch('/api/v1/procedures/:id', (req, res) => {
+  const { id } = req.params
+  const { date, surgeon, anesthetist, start_time, end_time, notes} = req.body
+  database('procedures').where('id', id).update({ date, surgeon, anesthetist, start_time, end_time, notes
   })
   .then(() => {
-    res.status(200)
+    database('procedures').where('id', id).select()
+    .then(procedures => res.status(200).json(procedures))
   })
-  .catch(error => error.status(422))
+  .catch(error => error.status(500))
 })
 
 // 3 DELETE ENDPOINTS
