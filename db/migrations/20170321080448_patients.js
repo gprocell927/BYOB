@@ -1,4 +1,3 @@
-
 exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.createTable('patients', function(table) {
@@ -6,33 +5,32 @@ exports.up = function(knex, Promise) {
       table.string('name')
       table.string('sex')
       table.string('species')
-      table.date('dob')
+      table.string('dob')
       table.timestamps
     }),
 
     knex.schema.createTable('procedures', function(table) {
       table.increments('id').primary()
-      table.date('date')
+      table.string('date')
       table.string('surgeon')
       table.string('anesthetist')
       table.integer('patient_id')
             .references('id')
             .inTable('patients')
       table.json('readings')
-      table.time('start_time')
-      table.time('end_time')
+      table.string('start_time')
+      table.string('end_time')
       table.text('notes')
       table.timestamps
     }),
 
     knex.schema.createTable('readings', function(table) {
       table.timestamp
-      //make a time column
-      table.decimal('temperature')
+      table.decimal('temperature',4,1)
       table.integer('pulse')
       table.integer('respirations')
-      table.decimal('oxygen')
-      table.decimal('vaporizer')
+      table.decimal('oxygen',2,1)
+      table.decimal('vaporizer',2,1)
       table.string('gas_agent')
       table.integer('systolic_bp')
       table.integer('diastolic_bp')
