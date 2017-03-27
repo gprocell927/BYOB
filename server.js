@@ -23,14 +23,31 @@ app.set('port', process.env.PORT || 3000)
 //6 GET ENDPOINTS
 
 app.get('/api/v1/patients', (req, res) => {
+  const species = req.query.species
+
   database('patients').select()
   .then(patients => {
-    res.status(200).json(patients)
+    if(species){
+      const matchingPatients = patients.filter(patient => {
+        return patient.species == species
+      })
+      if(matchingPatients.length === 0){
+        res.status(404).send({
+          error:'There are no existing patients belonging to that species.'
+        })
+      } else {
+        res.status(200).send(matchingPatients)
+        } 
+      }
+      else {
+        res.status(200).json(patients)
+    }
   })
   .catch((error) => {
     res.status(404)
   })
 })
+
 app.get('/api/v1/procedures', (req, res) => {
   database('procedures').select()
   .then(procedures => {
@@ -246,35 +263,24 @@ app.delete('/api/v1/readings/:id', (req, res) => {
     })
   })
 
-// 1 ENDPOINT THAT CALCULATES A TOTAL NUMBER OF SOMETHING
+// AN ENDPOINT THAT CALCULATES A TOTAL NUMBER OF SOMETHING
 app.get('/api/v1/readings/:id/avgtemperature', (req, res) => {
   const { id } = req.params
   database('readings').where('procedure_id', id).avg('temperature')
-  // => [{"temperature":"100.4"},{"temperature":"100.4"},{"temperature":"100.4"}]
   .then((readings) => {
     res.status(200).json(readings)
   })
   .catch(error => {
     res.status(404)
   })
-  //database('readings').where('id', id).select().reduce((total, temp) => {
-  //   const readingLength = temp.length
-  //   total = ( total + temp.temperature ) / readingLength
-  //   return total
-  // },0)
-  // .then(obj => console.log(obj))
-  // .catch(error => {
-  //   res.status(500)
-  })
+})
 
-//})
 // USE GET PARAMS ON AT LEAST ONE ENDPOINT
-app.get('/api/v1/patients', (req, res) => {
-  // const species = req.params.species
+//  // const species = req.params.species
   // database('patients').where('species', species).select()
   // .then((readings) => {
-    res.json({ querySpecies: req.query.species })
-  })
+  //  res.json({ querySpecies: req.query.species })
+  //})
   // database('patients').where('species', species).select()
   // .then((patients) => {
   //   res.status(200).json(patients)
