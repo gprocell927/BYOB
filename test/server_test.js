@@ -58,6 +58,16 @@ describe('GET endpoints', () => {
       })
     })
 
+    it('should return a 404 if patients are not available for query', (done) => {
+      chai.request(app)
+      .get('/api/v1/patients?species=elephant')
+      .end((err, res) => {
+        expect(res).to.have.status(404)
+        expect(res).to.be.json
+        done()
+      })
+    })
+
     it('GET /api/v1/procedures should return all procedures', (done) => {
       chai.request(app)
       .get('/api/v1/procedures')
@@ -140,6 +150,16 @@ describe('GET endpoints', () => {
       })
     })
 
+    it('should return a 404 if patient does not exist', (done) => {
+      chai.request(app)
+      .get('/api/v1/patients/foolala')
+      .end((err, res) => {
+        expect(res).to.have.status(404)
+        expect(res).to.be.json
+        done()
+      })
+    })
+
     it('GET /api/v1/procedures/:id should return a single procedure', (done) => {
       chai.request(app)
       .get('/api/v1/procedures/1')
@@ -163,6 +183,16 @@ describe('GET endpoints', () => {
       expect(res.body[0]).to.have.property('end_time')
       expect(res.body[0].end_time).to.equal('10:48 PM')
       done()
+      })
+    })
+
+    it.skip('should return a 404 if procedure does not exist', (done) => {
+      chai.request(app)
+      .get('/api/v1/procedures/foo')
+      .end((err, res) => {
+        expect(res).to.have.status(404)
+        expect(res).to.be.json
+        done()
       })
     })
 
@@ -198,6 +228,27 @@ describe('GET endpoints', () => {
       expect(res.body[0].spo2).to.equal(96)
       expect(res.body[0]).to.have.property('procedure_id')
       expect(res.body[0].procedure_id).to.equal(2)
+      done()
+      })
+    })
+
+    it.skip('should return a 404 if reading does not exist', (done) => {
+      chai.request(app)
+      .get('/api/v1/readings/foo')
+      .end((err, res) => {
+        expect(res).to.have.status(404)
+        expect(res).to.be.json
+        done()
+      })
+    })
+
+  it('should return an average temperature of a specific reading group', (done) => {
+    chai.request(app)
+    .get('/api/v1/readings/1/avgtemperature')
+    .end((err,res) => {
+      expect(res).to.have.status(200)
+      expect(res).to.be.json
+      expect(res.body[0].avg).to.equal('1.5666666666666667')
       done()
       })
     })
@@ -265,6 +316,43 @@ describe('POST /api/v1/patients ', () => {
       done()
     })
   })
+
+it('should return a 422 error if the patient info provided is insufficient', (done) => {
+  chai.request(app)
+  .post('/api/v1/patients')
+  .send({
+    thing:'does not exist'
+  })
+  .end((err, res) => {
+    expect(res).to.have.status(422)
+    done()
+    })
+  })
+
+  it('should return a 422 error if the procedure info provided is insufficient', (done) => {
+    chai.request(app)
+    .post('/api/v1/procedures')
+    .send({
+      nondate:'3-26-2007'
+    })
+    .end((err, res) => {
+      expect(res).to.have.status(500)
+      done()
+      })
+    })
+
+  it('should return a 422 error if the reading info provided is insufficient', (done) => {
+    chai.request(app)
+    .post('/api/v1/readings')
+    .send({
+      spo22:99
+    })
+    .end((err, res) => {
+      expect(res).to.have.status(422)
+      done()
+      })
+    })
+
 })
 
 describe('POST /api/v1/procedures ', () => {
@@ -335,6 +423,27 @@ describe('POST /api/v1/procedures ', () => {
 
 describe('POST /api/v1/readings ', () => {
   before((done) => {
+    const patients = [
+      {
+        name: 'Sophie Procell',
+        id:1,
+        sex:'FS',
+        species:'Canine',
+        dob: "04/01/2007"
+      }
+    ]
+    const procedures = [
+      {
+        date:"7/26/2016",
+        surgeon:'Patricia',
+        anesthetist:'Amélie',
+        patient_id:patients[0].id,
+        start_time:"12:03 PM",
+        end_time:"10:48 PM",
+        notes:'In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet',
+        procedure_id: patients[0].id
+      }
+    ]
     const readings = [
       {
         temperature:0.1,
@@ -348,22 +457,8 @@ describe('POST /api/v1/readings ', () => {
         mean_bp:45,
         etco2:7,
         spo2:41,
-        procedure_id:12
-      },
-      {
-        temperature:3.4,
-        pulse:33,
-        respirations:59,
-        oxygen:1.2,
-        vaporizer:2.0,
-        gas_agent:"isoflurane",
-        systolic_bp:5,
-        diastolic_bp:51,
-        mean_bp:44,
-        etco2:19,
-        spo2:3,
-        procedure_id:12
-      },
+        procedure_id:procedures[0].procedure_id
+      }
     ]
 
     knex.migrate.rollback()
@@ -423,5 +518,206 @@ describe('POST /api/v1/readings ', () => {
 })
 
 describe('PATCH /api/v1/patients/:id', () => {
+  before((done) => {
+    const patients = [
+      {
+        name: 'Sophie Procell',
+        id:1,
+        sex:'FS',
+        species:'Canine',
+        dob: "04/01/2007"
+      }
+    ]
+    knex.migrate.rollback()
+    .then(() => {
+      knex.migrate.latest()
+        .then(() => {
+           knex('patients').insert(patients)
+          .then(() =>{
+            done()
+          })
+        })
+      })
+  })
 
+  after((done) => {
+    knex.migrate.rollback()
+    .then(() => {
+      done()
+    })
+  })
+
+  it('should edit fields of a patient', (done) => {
+    chai.request(app)
+    .patch('/api/v1/patients/1')
+    .send({
+      name: 'The Loaf of Soph'
+    })
+    .end((err, res) => {
+      expect(res).to.have.status(200)
+      expect(res).to.be.json
+      expect(res.body).to.be.a('array')
+      expect(res.body).to.have.length(1)
+      expect(res.body[0].name).to.equal('The Loaf of Soph')
+      expect(res.body[0].sex).to.equal('FS')
+      done()
+    })
+  })
+})
+
+describe('PATCH /api/v1/procedures/:id', () => {
+  before((done) => {
+    const procedure = [
+      {
+        date:"7/26/2016",
+        surgeon:'Patricia',
+        anesthetist:'Amélie',
+        patient_id:1,
+        start_time:"12:03 PM",
+        end_time:"10:48 PM",
+        notes:'In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet'
+      }
+    ]
+    knex.migrate.rollback()
+    .then(() => {
+      knex.migrate.latest()
+        .then(() => {
+           knex('procedures').insert(procedure)
+          .then(() =>{
+            done()
+          })
+        })
+      })
+  })
+
+  after((done) => {
+    knex.migrate.rollback()
+    .then(() => {
+      done()
+    })
+  })
+  it('should edit fields of a procedure', (done) => {
+    chai.request(app)
+    .patch('/api/v1/procedures/1')
+    .send({
+      surgeon: 'Dr. Nick'
+    })
+    .end((err, res) => {
+      expect(res).to.have.status(200)
+      expect(res).to.be.json
+      expect(res.body).to.be.a('array')
+      expect(res.body).to.have.length(1)
+      expect(res.body[0].surgeon).to.equal('Dr. Nick')
+      expect(res.body[0].anesthetist).to.equal('Amélie')
+      done()
+    })
+  })
+})
+
+describe('PATCH /api/v1/readings/:procedure_id', () => {
+  before((done) => {
+    const reading = [
+      {
+        temperature:0.1,
+        pulse:100,
+        respirations:60,
+        oxygen:3.4,
+        vaporizer:3.3,
+        gas_agent:"sevoflurane",
+        systolic_bp:78,
+        diastolic_bp:39,
+        mean_bp:45,
+        etco2:7,
+        spo2:41,
+        procedure_id:12
+      }
+    ]
+    knex.migrate.rollback()
+    .then(() => {
+      knex.migrate.latest()
+        .then(() => {
+           knex('readings').insert(reading)
+          .then(() =>{
+            done()
+          })
+        })
+      })
+  })
+
+  after((done) => {
+    knex.migrate.rollback()
+    .then(() => {
+      done()
+    })
+  })
+  it('should edit fields of a reading', (done) => {
+    chai.request(app)
+    .patch('/api/v1/readings/1')
+    .send({
+      temperature: 1000.0,
+      gas_agent: 'isoflurane'
+    })
+    .end((err, res) => {
+      expect(res).to.have.status(200)
+      expect(res).to.be.json
+      expect(res.body).to.be.a('array')
+      expect(res.body).to.have.length(1)
+      expect(res.body[0].temperature).to.equal(1000.0)
+      expect(res.body[0].pulse).to.equal(100)
+      expect(res.body[0].gas_agent).to.equal('isoflurane')
+      done()
+    })
+  })
+})
+
+describe('DELETE endpoints', () => {
+  beforeEach((done) => {
+    knex.migrate.rollback()
+    .then(() => {
+      knex.migrate.latest()
+        .then(() => {
+           knex.seed.run()
+          .then(() => {
+            done()
+          })
+        })
+      })
+  })
+
+  afterEach((done) => {
+    knex.migrate.rollback()
+    .then(() => {
+      done()
+    })
+  })
+
+  it('should delete a patient when given an id', (done) => {
+    chai.request(app)
+    .delete('/api/v1/patients/1')
+    .end((err, res) => {
+      expect(res).to.have.status(200)
+      expect(res).to.be.a('object')
+      done()
+    })
+  })
+
+  it('should delete a procedure when given an id', (done) => {
+    chai.request(app)
+    .delete('/api/v1/procedures/12')
+    .end((err, res) => {
+      expect(res).to.have.status(200)
+      expect(res).to.be.a('object')
+      done()
+    })
+  })
+
+  it('should delete a reading when given an id', (done) => {
+    chai.request(app)
+    .delete('/api/v1/readings/3')
+    .end((err, res) => {
+      expect(res).to.have.status(200)
+      expect(res).to.be.a('object')
+      done()
+    })
+  })
 })

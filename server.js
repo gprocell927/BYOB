@@ -37,7 +37,7 @@ app.get('/api/v1/patients', (req, res) => {
         })
       } else {
         res.status(200).send(matchingPatients)
-        } 
+        }
       }
       else {
         res.status(200).json(patients)
@@ -69,9 +69,15 @@ app.get('/api/v1/readings', (req, res) => {
 })
 
 app.get('/api/v1/patients/:id', (req, res) => {
-  database('patients').where('id', req.params.id).select()
+  database('patients').where('id',req.params.id).select()
   .then(patients => {
-    res.status(200).json(patients)
+    if(patients.length === 0){
+      res.status(404).send({
+        error:'There are no existing patients belonging to that id.'
+      })
+    } else {
+      res.status(200).json(patients)
+    }
   })
   .catch(error => {
     res.status(404)
@@ -81,18 +87,29 @@ app.get('/api/v1/patients/:id', (req, res) => {
 app.get('/api/v1/procedures/:id', (req, res) => {
   database('procedures').where('id', req.params.id).select()
   .then(procedures => {
+    if(procedures.length === 0){
+      res.status(404).send({
+        error:'There are no existing procedures associated with that id.'
+      })
+    } else {
     res.status(200).json(procedures)
+    }
   })
   .catch(error => {
     res.status(404)
   })
 })
 
-
 app.get('/api/v1/readings/:id', (req, res) => {
   database('readings').where('procedure_id', req.params.id).select()
   .then(readings => {
+    if(readings.length === 0){
+      res.status(404).send({
+        error:'There are no existing readings associated with that id.'
+      })
+    } else {
     res.status(200).json(readings)
+    }
   })
   .catch(error => {
     res.status(404)
@@ -111,8 +128,7 @@ app.post('/api/v1/patients', (req, res) => {
         res.status(200).json(patients)
       })
     .catch(error => {
-      console.error('Something stinks about the db')
-      res.sendStatus(500)
+      res.sendStatus(422)
     })
   })
 })
@@ -127,7 +143,6 @@ app.post('/api/v1/procedures', (req, res) => {
         res.status(200).json(procedures)
       })
     .catch(error => {
-      res.send('Something stinks about the db')
       res.sendStatus(500)
     })
   })
@@ -169,8 +184,7 @@ app.post('/api/v1/readings', (req, res) => {
         res.status(200).json(readings)
       })
     .catch(error => {
-      console.error('Something stinks about the db')
-      res.sendStatus(500)
+      res.sendStatus(422)
     })
   })
 })
@@ -275,18 +289,6 @@ app.get('/api/v1/readings/:id/avgtemperature', (req, res) => {
   })
 })
 
-// USE GET PARAMS ON AT LEAST ONE ENDPOINT
-//  // const species = req.params.species
-  // database('patients').where('species', species).select()
-  // .then((readings) => {
-  //  res.json({ querySpecies: req.query.species })
-  //})
-  // database('patients').where('species', species).select()
-  // .then((patients) => {
-  //   res.status(200).json(patients)
-  // })
-  // .catch(error => res.status(404))
-//})
 
 if(!module.parent){
   app.listen(app.get('port'), ()=> {
